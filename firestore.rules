@@ -1,0 +1,41 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny all unmatched documents (Zero-Trust)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper: Verify if the user is signed in
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Helper: Restaurant tenant ID format validation
+    function isValidTenantId(restaurantId) {
+      return restaurantId is string && restaurantId.size() > 0 && restaurantId.size() <= 64;
+    }
+
+    // User profile mapping (personal profile only)
+    match /users/{userId} {
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Restaurant Root Document & Subcollections
+    match /restaurants/{restaurantId} {
+      // Store profile can be read or written by authorized tenant
+      allow read, write: if isValidTenantId(restaurantId);
+
+      // Operational subcollections (orders, settled_orders, tables, sections, shifts, drivers, menu_items, categories, etc.)
+      match /{subcollection}/{docId} {
+        allow read, write: if isValidTenantId(restaurantId);
+
+        match /{nestedCol}/{nestedDocId} {
+          allow read, write: if isValidTenantId(restaurantId);
+        }
+      }
+    }
+  }
+}
+

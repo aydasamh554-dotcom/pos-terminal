@@ -1,0 +1,98 @@
+{
+  "entities": {
+    "Restaurant": {
+      "title": "Restaurant",
+      "description": "Tenant restaurant profile and configuration",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "branch": { "type": "string" },
+        "crNumber": { "type": "string" },
+        "taxNumber": { "type": "string" },
+        "currency": { "type": "string" },
+        "taxRate": { "type": "number" },
+        "address": { "type": "string" },
+        "phone": { "type": "string" },
+        "ownerEmail": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "name", "currency"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Restaurant order or invoice",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "orderNumber": { "type": "string" },
+        "restaurantId": { "type": "string" },
+        "channel": { "type": "string" },
+        "status": { "type": "string" },
+        "tableId": { "type": "string" },
+        "tableName": { "type": "string" },
+        "sectionName": { "type": "string" },
+        "items": { "type": "array" },
+        "totalAmount": { "type": "number" },
+        "taxAmount": { "type": "number" },
+        "discountAmount": { "type": "number" },
+        "createdAt": { "type": "string" },
+        "cashierName": { "type": "string" }
+      },
+      "required": ["id", "restaurantId", "channel", "totalAmount"]
+    },
+    "Shift": {
+      "title": "Shift",
+      "description": "Cashier shift register record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "restaurantId": { "type": "string" },
+        "cashier": { "type": "string" },
+        "openedAt": { "type": "string" },
+        "closedAt": { "type": "string" },
+        "openingCash": { "type": "number" },
+        "cashSales": { "type": "number" },
+        "cardSales": { "type": "number" },
+        "actualCounted": { "type": "number" },
+        "difference": { "type": "number" },
+        "status": { "type": "string" }
+      },
+      "required": ["id", "restaurantId", "openingCash"]
+    },
+    "MenuItem": {
+      "title": "MenuItem",
+      "description": "Restaurant dish or product",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "restaurantId": { "type": "string" },
+        "name": { "type": "string" },
+        "price": { "type": "number" },
+        "category": { "type": "string" },
+        "categoryId": { "type": "string" },
+        "image": { "type": "string" },
+        "isAvailable": { "type": "boolean" }
+      },
+      "required": ["id", "restaurantId", "name", "price"]
+    }
+  },
+  "firestore": {
+    "/restaurants/{restaurantId}": {
+      "schema": "Restaurant",
+      "description": "Tenant restaurant documents"
+    },
+    "/restaurants/{restaurantId}/orders/{orderId}": {
+      "schema": "Order",
+      "description": "Active and past orders for each tenant"
+    },
+    "/restaurants/{restaurantId}/shifts/{shiftId}": {
+      "schema": "Shift",
+      "description": "Shift records for each tenant"
+    },
+    "/restaurants/{restaurantId}/menu_items/{itemId}": {
+      "schema": "MenuItem",
+      "description": "Menu items catalog for each tenant"
+    }
+  }
+}
